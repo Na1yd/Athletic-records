@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DK states, tech and matchup</title>
+    <title>Athletics records burnside</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
     <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
+<body class="w3-container">
     <div class="header">
         <div class="title">
-            <h1>DK</h1>
+            <h1>Athletics records</h1>
         </div>
-        <div class="navbar">
-            <button onclick="window.location.href='/'" class="navbar-button">test</button>
-            <button onclick="window.location.href='/'" class="navbar-button">test</button>
-            <button onclick="window.location.href='/'" class="navbar-button">test</button>
+        <div class="w3-bar w3-green">
+            <a href="#" class="w3-bar-item w3-button">Home</a>
+            <a href="#" class="w3-bar-item w3-button">Link 1</a>
+            <a href="#" class="w3-bar-item w3-button">Link 2</a>
+            <a href="#" class="w3-bar-item w3-button">Link 3</a>
         </div>
     </div>
-    <div class="main-body">
-        <p> {% block content %} {% endblock %}</p>
+        {% block content %}{% endblock %}
+</body>
