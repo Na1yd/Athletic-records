@@ -1,7 +1,23 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2> somthing important or somthing else like that ig bro its pretty good in da displays display displaysing displaysersingza tables </h2>
+  <table>
+    <tr>
+      <th>Full name</th>
+      <th>Time</th>
+      <th>Distance</th>
+      <th>Age group</th>
+      <th>Year</th>
+    </tr>
   {% for display in displays %}
-      <p>{{ display }}</p>
+    <tr>
+      <td>{{display[4]}}</td>
+      <td>{{display[5]}}</td>
+      <td>{{display[2]}}</td>
+      <td>{{display[3]}}</td>
+      <td>{{display[1]}}</td>
+    </tr>
     {% endfor %}
+  </table>
+
 {% endblock %}

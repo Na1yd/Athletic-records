@@ -13,8 +13,14 @@ def home():
 def all_characters():
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
-    cur.execute('SELECT display.id , event.name FROM display INNER JOIN event '
-                'ON display.event_id = event.id')
+    cur.execute("""
+                SELECT display.id, display.year, event.name, age_group.name, person.name, record.record
+                FROM display
+                INNER JOIN event ON display.event_id = event.id
+                INNER JOIN age_group ON display.age_group_id = age_group.id
+                INNER JOIN person ON display.person_id = person.id
+                INNER JOIN record ON display.record_id = record.id
+                """)
     displays = cur.fetchall()
     conn.close()
     return render_template('display.html', displays=displays)
@@ -23,8 +29,4 @@ def all_characters():
 if __name__ == "__main__":
     app.run(debug=True)
 
-        # FROM display
-        # LEFT JOIN event ON display.event_id = event.id
-        # LEFT JOIN age_group ON display.age_group_id = age_group.id
-        # LEFT JOIN person ON display.person_id = person.id
-        # LEFT JOIN record ON display.record_id = record.id;
+
