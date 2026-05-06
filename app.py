@@ -14,7 +14,8 @@ def all_characters():
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
     cur.execute("""
-                SELECT display.id, display.year, event.name, age_group.name, person.name, record.record
+                SELECT display.id, display.year, event.name, age_group.name, 
+                person.name, record.record
                 FROM display
                 INNER JOIN event ON display.event_id = event.id
                 INNER JOIN age_group ON display.age_group_id = age_group.id

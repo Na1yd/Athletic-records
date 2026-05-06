@@ -1,4 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-<h2> somthing important or somthing else like that ig bro </h2>
+<label for="event">Choose a distance:</label>
+<select id="event" name="events">
+  <option value="100m">100m</option>
+  <option value="200m">200m</option>
+  <option value="400m">400m</option>
+  <option value="800m">800m</option>
+</select>
+  <input type="submit">
 {% endblock %}
