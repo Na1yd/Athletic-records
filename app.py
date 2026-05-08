@@ -9,22 +9,21 @@ def home():
     return render_template("home.html")
 
 
-@app.route("/display")
+@app.route("/records")
 def all_characters():
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
     cur.execute("""
-                SELECT display.id, display.year, event.name, age_group.name, 
-                person.name, record.record
-                FROM display
-                INNER JOIN event ON display.event_id = event.id
-                INNER JOIN age_group ON display.age_group_id = age_group.id
-                INNER JOIN person ON display.person_id = person.id
-                INNER JOIN record ON display.record_id = record.id
+                SELECT records.id, records.year, event.name, age_group.name, 
+                person.name, records.bhs_record
+                FROM records
+                INNER JOIN event ON records.event_id = event.id
+                INNER JOIN age_group ON records.age_group_id = age_group.id
+                INNER JOIN person ON records.person_id = person.id
                 """)
-    displays = cur.fetchall()
+    record = cur.fetchall()
     conn.close()
-    return render_template('display.html', displays=displays)
+    return render_template('records.html', record=record)
 
 
 if __name__ == "__main__":
