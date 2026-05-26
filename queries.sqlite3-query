@@ -1,0 +1,5 @@
+-- database: ./athletics.db
+
+SELECT * FROM records;
+
+SELECT * FROM event;
