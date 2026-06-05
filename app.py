@@ -39,9 +39,11 @@ def home():
                 INNER JOIN age_group ON records.age_group_id = age_group.id
                 INNER JOIN person ON records.person_id = person.id
                 """)
-    events = query_db("SELECT * FROM event;")
+    records = cur.fetchall()
     conn.close()
-    return render_template("home.html", events=events)
+    events = query_db("SELECT * FROM event;")
+    age_groups = query_db("SELECT * FROM age_group;")
+    return render_template("home.html",  records=records, events=events, age_groups=age_groups)
 
 
 @app.route("/records")
@@ -60,27 +62,10 @@ def records_table():
     return render_template('records.html', record=record)
 
 
-#@app.route('/submit', methods=['POST'])
-#def submit():
-    # 'car_brand' matches the name attribute in HTML
-    #selected_value = request.form.get('events') 
-    #conn = sqlite3.connect("athletics.db")
-    #cur = conn.cursor()
-    #cur.execute("""
-                #SELECT records.id, records.year, age_group.name,
-                #person.name, records.bhs_record
-                #FROM records
-                #INNER JOIN event ON records.event_id = event.id
-                #INNER JOIN age_group ON records.age_group_id = age_group.id
-                #INNER JOIN person ON records.person_id = person.id
-                #""")
-   #record = cur.fetchall()
-    #return render_template('records.html', {selected_value})
-
-
 @app.route('/submit', methods=['POST'])
 def submit():
-    selected_value = request.form.get('events')
+    selected_event = request.form.get('events')
+    selected_age_group = request.form.get('age_groups')
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
     cur.execute("""
@@ -90,12 +75,17 @@ def submit():
                 INNER JOIN event ON records.event_id = event.id
                 INNER JOIN age_group ON records.age_group_id = age_group.id
                 INNER JOIN person ON records.person_id = person.id
-                WHERE records.event_id = ?
+                WHERE records.age_group_id = ?
+
                 ORDER BY records.year DESC
-                """, (selected_value,))
+                """, (selected_age_group))
     record = cur.fetchall()
     conn.close()
     return render_template('records.html', record=record)
+                #WHERE records.event_id = ?
+                #AND records.age_group_id = ?
+                #ORDER BY records.year DESC
+                #""", (selected_event, selected_age_group))
 
 
 if __name__ == "__main__":

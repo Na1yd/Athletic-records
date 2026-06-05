@@ -7,6 +7,12 @@
     <option value='{{ event[0] }}'>{{ event[1] }}</option>
     {% endfor %}
   </select>
+  <label for="age_group">Choose a year:</label>
+  <select id="age_group" name="age_group">
+    {% for age_group in age_groups %}
+    <option value='{{ age_group[0] }}'>{{ age_group[1] }}</option>
+    {% endfor %}
+  </select>
   <button type="submit">Submit</button>
 </form>
 {% endblock %}
