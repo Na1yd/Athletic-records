@@ -42,8 +42,24 @@ def home():
     records = cur.fetchall()
     conn.close()
     events = query_db("SELECT * FROM event;")
-    age_groups = query_db("SELECT * FROM age_group;")
-    return render_template("home.html",  records=records, events=events, age_groups=age_groups)
+    return render_template("home.html",  records=records, events=events)
+
+#                INNER JOIN age_group ON records.age_group_id = age_group.id
+#                INNER JOIN person ON records.person_id = person.id
+#                """)
+#    records = cur.fetchall()
+#    conn.close()
+#    events = query_db("SELECT * FROM event;")
+#    age_groups = query_db("SELECT * FROM age_group;")
+#    return render_template("home.html",  records=records, events=events, age_groups=age_groups)
+#  </select>
+#  <label for="age_group">Choose a year:</label>
+#  <select id="age_group" name="age_group">
+#    {% for age_group in age_groups %}
+#    <option value='{{ age_group[0] }}'>{{ age_group[1] }}</option>
+#    {% endfor %}
+#  </select>
+#  <button type="submit">Submit</button>
 
 
 @app.route("/records")
