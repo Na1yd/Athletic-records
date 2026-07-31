@@ -32,34 +32,19 @@ def home():
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
     cur.execute("""
-                SELECT records.id, records.year, event.name, age_group.name,
-                person.name, records.bhs_record
-                FROM records
-                INNER JOIN event ON records.event_id = event.id
-                INNER JOIN age_group ON records.age_group_id = age_group.id
-                INNER JOIN person ON records.person_id = person.id
-                """)
+        SELECT records.id, records.year, event.name, age_group.name,
+        person.name, records.bhs_record
+        FROM records
+        INNER JOIN event ON records.event_id = event.id
+        INNER JOIN age_group ON records.age_group_id = age_group.id
+        INNER JOIN person ON records.person_id = person.id
+    """)
     records = cur.fetchall()
     conn.close()
-    events = query_db("SELECT * FROM event;")
-    return render_template("home.html",  records=records, events=events)
-
-#                INNER JOIN age_group ON records.age_group_id = age_group.id
-#                INNER JOIN person ON records.person_id = person.id
-#                """)
-#    records = cur.fetchall()
-#    conn.close()
-#    events = query_db("SELECT * FROM event;")
-#    age_groups = query_db("SELECT * FROM age_group;")
-#    return render_template("home.html",  records=records, events=events, age_groups=age_groups)
-#  </select>
-#  <label for="age_group">Choose a year:</label>
-#  <select id="age_group" name="age_group">
-#    {% for age_group in age_groups %}
-#    <option value='{{ age_group[0] }}'>{{ age_group[1] }}</option>
-#    {% endfor %}
-#  </select>
-#  <button type="submit">Submit</button>
+    events = query_db("SELECT id, name FROM event;")
+    age_groups = query_db("SELECT id, name FROM age_group;")
+    return render_template("home.html", records=records, events=events, 
+                           age_groups=age_groups)
 
 
 @app.route("/records")
@@ -84,24 +69,19 @@ def submit():
     selected_age_group = request.form.get('age_groups')
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
-    cur.execute("""
-                SELECT records.id, records.year, event.name, age_group.name,
-                person.name, records.bhs_record
-                FROM records
-                INNER JOIN event ON records.event_id = event.id
-                INNER JOIN age_group ON records.age_group_id = age_group.id
-                INNER JOIN person ON records.person_id = person.id
-                WHERE records.age_group_id = ?
+    cur.execute('''
+        SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
+        FROM records
+        INNER JOIN event ON records.event_id = event.id
+        INNER JOIN age_group ON records.age_group_id = age_group.id
+        INNER JOIN person ON records.person_id = person.id
+        WHERE records.age_group_id = ? AND records.event_id = ?
+        ORDER BY records.year DESC
+    ''', (selected_age_group, selected_event))
 
-                ORDER BY records.year DESC
-                """, (selected_age_group))
     record = cur.fetchall()
     conn.close()
     return render_template('records.html', record=record)
-                #WHERE records.event_id = ?
-                #AND records.age_group_id = ?
-                #ORDER BY records.year DESC
-                #""", (selected_event, selected_age_group))
 
 
 if __name__ == "__main__":
