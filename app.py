@@ -12,7 +12,7 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE)
     return db
 
-
+#testing commit
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
