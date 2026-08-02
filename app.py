@@ -69,15 +69,48 @@ def submit():
     selected_age_group = request.form.get('age_groups')
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
-    cur.execute('''
-        SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
-        FROM records
-        INNER JOIN event ON records.event_id = event.id
-        INNER JOIN age_group ON records.age_group_id = age_group.id
-        INNER JOIN person ON records.person_id = person.id
-        WHERE records.age_group_id = ? AND records.event_id = ?
-        ORDER BY records.year DESC
-    ''', (selected_age_group, selected_event))
+
+    if selected_event == "All events" and selected_age_group == "All years":
+         cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            ORDER BY records.year DESC
+        ''',)
+         
+    elif selected_event == "All events":
+            cur.execute('''
+                SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
+                FROM records
+                INNER JOIN event ON records.event_id = event.id
+                INNER JOIN age_group ON records.age_group_id = age_group.id
+                INNER JOIN person ON records.person_id = person.id
+                WHERE records.age_group_id = ?
+                ORDER BY records.year DESC
+            ''', (selected_age_group))
+
+    elif selected_age_group == "All years":
+            cur.execute('''
+                SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
+                FROM records
+                INNER JOIN event ON records.event_id = event.id
+                INNER JOIN age_group ON records.age_group_id = age_group.id
+                INNER JOIN person ON records.person_id = person.id
+            WHERE records.event_id = ?
+                ORDER BY records.year DESC
+            ''', (selected_event))
+    else:
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE records.age_group_id = ? AND records.event_id = ?
+            ORDER BY records.year DESC
+        ''', (selected_age_group, selected_event))
 
     record = cur.fetchall()
     conn.close()
