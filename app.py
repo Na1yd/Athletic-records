@@ -1,9 +1,21 @@
 from flask import Flask, render_template, request, g
 import sqlite3
 
+
+
+
 app = Flask(__name__)
 
+
+
+
 DATABASE = "athletics.db"
+
+
+
+
+
+
 
 
 def get_db():
@@ -13,6 +25,12 @@ def get_db():
     return db
 
 
+
+
+
+
+
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
@@ -20,11 +38,23 @@ def close_connection(exception):
         db.close()
 
 
+
+
+
+
+
+
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
     rv = cur.fetchall()
     cur.close()
     return (rv[0] if rv else None) if one else rv
+
+
+
+
+
+
 
 
 #This is the home route which displays the form that allows you to filter the
@@ -49,6 +79,12 @@ def home():
                            age_groups=age_groups)
 
 
+
+
+
+
+
+
 #This is the route for all the records in the database.
 @app.route("/records")
 def records_table():
@@ -66,7 +102,7 @@ def records_table():
     return render_template('records.html', record=record)
 
 
-#This is the route for the submission form on the home page that filters the 
+#This is the route for the submission form on the home page that filters the
 #records based on the selected event and age group.
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -85,7 +121,95 @@ def submit():
             INNER JOIN age_group ON records.age_group_id = age_group.id
             INNER JOIN person ON records.person_id = person.id
         ''',)
-
+    #This is for if they select all boys records from a all events.
+    elif selected_age_group == "Boys" and selected_event == "All events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE age_group.Gender = 2
+        ''',)
+    #This is for if they select all girls records from a all events.
+    elif selected_age_group == "Girls" and selected_event == "All events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE age_group.Gender = 1
+        ''',)
+    #This is for if they select all track event records from all year groups.
+    elif selected_age_group == "All years" and selected_event == "All track events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE event.Event_type = 1
+        ''',)
+    #This is for if they select all field event records from all year groups.
+    elif selected_age_group == "All years" and selected_event == "All field events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE event.Event_type = 2
+        ''',)
+    #This is for if they select all boys records from all field events.
+    elif selected_age_group == "Boys" and selected_event == "All field events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE event.Event_type = 2 and age_group.Gender = 2
+        ''',)
+    #This is for if they select all boys records from all track events.
+    elif selected_age_group == "Boys" and selected_event == "All track events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE event.Event_type = 1 and age_group.Gender = 2
+        ''',)
+    #This is for if they select all girls records from all field events.
+    elif selected_age_group == "Girls" and selected_event == "All field events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE event.Event_type = 2 and age_group.Gender = 1
+        ''',)
+    #This is for if they select all girls records from all track events.
+    elif selected_age_group == "Girls" and selected_event == "All track events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE event.Event_type = 1 and age_group.Gender = 1
+        ''',)
+    #This is for if they select all boys records from a specific event.
     elif selected_age_group == "Boys":
         cur.execute('''
             SELECT records.id, records.year, event.name, age_group.name,
@@ -96,8 +220,8 @@ def submit():
             INNER JOIN person ON records.person_id = person.id
             WHERE age_group.Gender = 2 AND records.event_id = ?
             ORDER BY records.year DESC
-        ''', (selected_age_group, selected_event))
-
+        ''', (selected_event))
+    #This is for if they select all girls records from a specific event.
     elif selected_age_group == "Girls":
         cur.execute('''
             SELECT records.id, records.year, event.name, age_group.name,
@@ -108,8 +232,29 @@ def submit():
             INNER JOIN person ON records.person_id = person.id
             WHERE age_group.Gender = 1 AND records.event_id = ?
             ORDER BY records.year DESC
-        ''', (selected_age_group, selected_event))
-
+        ''', (selected_event))
+    #This is for if they select all track records from a specific age group.
+    elif selected_event == "All track events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE records.age_group_id = ? AND event.Event_type = 1
+        ''', (selected_age_group))
+    #This is for if they select all field records from a specific age group.
+    elif selected_event == "All field events":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE records.age_group_id = ? AND event.Event_type = 2
+        ''', (selected_age_group))
     #This is for if they select all events and one age group. It will show all
     #events records for that age group.
     elif selected_event == "All events":
@@ -152,7 +297,6 @@ def submit():
     record = cur.fetchall()
     conn.close()
     return render_template('records.html', record=record)
-
 
 if __name__ == "__main__":
     app.run(debug=True)
