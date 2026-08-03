@@ -4,6 +4,8 @@
   <label for="event">Choose a distance:</label>
   <select id="event" name="events">
     <option value="All events">All events</option>
+    <option value="All field events">All field events</option>
+    <option value="All track events">All track events</option>
     {% for event in events %}
       <option value="{{ event[0] }}">{{ event[1] }}</option>
     {% endfor %}
@@ -11,6 +13,8 @@
   <label for="age_group">Choose a year:</label>
   <select id="age_group" name="age_groups">
     <option value="All years">All years</option>
+    <option value="Boys">Boys</option>
+    <option value="Girls">Girls</option>
     {% for age_group in age_groups %}
       <option value="{{ age_group[0] }}">{{ age_group[1] }}</option>
     {% endfor %}

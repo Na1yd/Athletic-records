@@ -85,6 +85,31 @@ def submit():
             INNER JOIN age_group ON records.age_group_id = age_group.id
             INNER JOIN person ON records.person_id = person.id
         ''',)
+
+    elif selected_age_group == "Boys":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE age_group.Gender = 2 AND records.event_id = ?
+            ORDER BY records.year DESC
+        ''', (selected_age_group, selected_event))
+
+    elif selected_age_group == "Girls":
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE age_group.Gender = 1 AND records.event_id = ?
+            ORDER BY records.year DESC
+        ''', (selected_age_group, selected_event))
+
     #This is for if they select all events and one age group. It will show all
     #events records for that age group.
     elif selected_event == "All events":
