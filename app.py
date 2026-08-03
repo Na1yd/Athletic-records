@@ -12,7 +12,7 @@ def get_db():
         db = g._database = sqlite3.connect(DATABASE)
     return db
 
-#testing commit
+
 @app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
@@ -27,6 +27,8 @@ def query_db(query, args=(), one=False):
     return (rv[0] if rv else None) if one else rv
 
 
+#This is the home route which displays the form that allows you to filter the
+#records.
 @app.route("/")
 def home():
     conn = sqlite3.connect("athletics.db")
@@ -43,10 +45,11 @@ def home():
     conn.close()
     events = query_db("SELECT id, name FROM event;")
     age_groups = query_db("SELECT id, name FROM age_group;")
-    return render_template("home.html", records=records, events=events, 
+    return render_template("home.html", records=records, events=events,
                            age_groups=age_groups)
 
 
+#This is the route for all the records in the database.
 @app.route("/records")
 def records_table():
     conn = sqlite3.connect("athletics.db")
@@ -63,47 +66,56 @@ def records_table():
     return render_template('records.html', record=record)
 
 
+#This is the route for the submission form on the home page that filters the 
+#records based on the selected event and age group.
 @app.route('/submit', methods=['POST'])
 def submit():
     selected_event = request.form.get('events')
     selected_age_group = request.form.get('age_groups')
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
-
+    #This is in case both are set to defult. Does the same thing as the all
+    #records route.
     if selected_event == "All events" and selected_age_group == "All years":
-         cur.execute('''
-            SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
             FROM records
             INNER JOIN event ON records.event_id = event.id
             INNER JOIN age_group ON records.age_group_id = age_group.id
             INNER JOIN person ON records.person_id = person.id
-            ORDER BY records.year DESC
         ''',)
-         
+    #This is for if they select all events and one age group. It will show all
+    #events records for that age group.
     elif selected_event == "All events":
-            cur.execute('''
-                SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
-                FROM records
-                INNER JOIN event ON records.event_id = event.id
-                INNER JOIN age_group ON records.age_group_id = age_group.id
-                INNER JOIN person ON records.person_id = person.id
-                WHERE records.age_group_id = ?
-                ORDER BY records.year DESC
-            ''', (selected_age_group))
-
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
+            WHERE records.age_group_id = ?
+            ORDER BY records.year DESC
+        ''', (selected_age_group))
+    #This is for if they select all age groups and one event. It will show all
+    #age group records for that one specific event.
     elif selected_age_group == "All years":
-            cur.execute('''
-                SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
-                FROM records
-                INNER JOIN event ON records.event_id = event.id
-                INNER JOIN age_group ON records.age_group_id = age_group.id
-                INNER JOIN person ON records.person_id = person.id
+        cur.execute('''
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
+            FROM records
+            INNER JOIN event ON records.event_id = event.id
+            INNER JOIN age_group ON records.age_group_id = age_group.id
+            INNER JOIN person ON records.person_id = person.id
             WHERE records.event_id = ?
-                ORDER BY records.year DESC
-            ''', (selected_event))
+            ORDER BY records.year DESC
+        ''', (selected_event))
+    #This is for if they want a specific record for that age group and event.
     else:
         cur.execute('''
-            SELECT records.id, records.year, event.name, age_group.name, person.name, records.bhs_record
+            SELECT records.id, records.year, event.name, age_group.name,
+            person.name, records.bhs_record
             FROM records
             INNER JOIN event ON records.event_id = event.id
             INNER JOIN age_group ON records.age_group_id = age_group.id
