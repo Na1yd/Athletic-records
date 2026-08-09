@@ -255,7 +255,7 @@ def submit():
             WHERE records.age_group_id = ? AND records.event_id = ?
             ORDER BY records.year DESC
         ''', (selected_age_group, selected_event))
-    #this is for incase they mess with the submit method and try to submit somthing that is not in the database.
+#This is for incase they mess with the submit method and try to submit somthing that is not in the database.
     if not cur or not selected_event or not selected_age_group:
         return render_template('404.html'), 404
 
@@ -263,7 +263,7 @@ def submit():
     conn.close()
     return render_template('records.html', record=record)
 
-# If they try to go to a page that does not exist then it will give them this error mesage
+#If they try to go to a page that does not exist then it will give them this error mesage
 @app.errorhandler(404)
 def invalid_route(error):
     return render_template('404.html'), 404
