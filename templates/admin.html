@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="admin-container">
+    <h2>Admin Panel</h2>
+    
+    <p>Welcome, <strong>{{ session['username'] }}</strong>!</p>
+    
+    <div class="admin-menu">
+        <h3>Admin Options:</h3>
+        <ul>
+            <li><a href="{{ url_for('records_table') }}">View All Records</a></li>
+            <li><a href="{{ url_for('manage_database') }}">Manage Records</a></li>
+            <li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </div>
+    
+    <section class="admin-info">
+        <h3>About This Panel</h3>
+        <p>From here you can manage athletic records in the database.</p>
+    </section>
+</div>
+
+{% endblock %}

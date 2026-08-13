@@ -1,0 +1,65 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="manage-container">
+    <h2>Manage Records</h2>
+    
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="records-section">
+        <h3>Edit Records</h3>
+        {% if records %}
+            <div class="records-list">
+                {% for record in records %}
+                    <div class="record-card">
+                        <form method="POST" action="{{ url_for('update_record', record_id=record[0]) }}" class="edit-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Event:</label>
+                                    <div class="readonly-field">{{ record[2] }}</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label>Age Group:</label>
+                                    <div class="readonly-field">{{ record[3] }}</div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="year_{{ record[0] }}">Year:</label>
+                                    <input type="number" id="year_{{ record[0] }}" name="year" value="{{ record[1] }}" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="person_{{ record[0] }}">Person Name:</label>
+                                    <input type="text" id="person_{{ record[0] }}" name="person_name" value="{{ record[4] }}" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="record_{{ record[0] }}">Record:</label>
+                                    <input type="text" id="record_{{ record[0] }}" name="bhs_record" value="{{ record[5] }}" required>
+                                </div>
+                                
+                                <div class="form-group button-group">
+                                    <button type="submit" class="btn-update">Update</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No records found.</p>
+        {% endif %}
+    </div>
+    
+    <a href="{{ url_for('admin_panel') }}" class="btn-back">Back to Admin Panel</a>
+</div>
+
+{% endblock %}
