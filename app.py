@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, g, redirect, url_for, flash, session
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash
 from functools import wraps
 import sqlite3
 
@@ -10,6 +10,7 @@ app.config["SECRET_KEY"] = "Cabbage tree"
 
 DATABASE = "athletics.db"
 
+
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -17,6 +18,7 @@ def login_required(f):
             return redirect(url_for("login"))
         return f(*args, **kwargs)
     return decorated_function
+
 
 def get_db():
     db = getattr(g, "_database", None)
@@ -30,6 +32,7 @@ def close_connection(exception):
     db = getattr(g, "_database", None)
     if db is not None:
         db.close()
+
 
 # This is the login route which allows the user to log in and change records in the database.
 @app.route("/login", methods=["GET", "POST"])
@@ -50,6 +53,7 @@ def login():
         flash("Invalid login", "error")
     return render_template("login.html")
 
+
 # For logging out of admin
 @app.route("/logout")
 @login_required
@@ -57,11 +61,13 @@ def logout():
     session.clear()
     return redirect("/")
 
+
 # This is the admin change area where you can alter records and it requirs admin login
 @app.route("/admin")
 @login_required
 def admin_panel():
     return render_template("admin.html")
+
 
 # Admin database management
 @app.route("/admin/manage", methods=["GET", "POST"])
@@ -69,8 +75,8 @@ def admin_panel():
 def manage_database():
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
-    
-    # Get all records with details
+
+
     cur.execute("""
         SELECT records.id, records.year, event.name, age_group.name,
         person.name, records.bhs_record
@@ -80,7 +86,7 @@ def manage_database():
         INNER JOIN person ON records.person_id = person.id
     """)
     records = cur.fetchall()
-    
+
     # Get events and age groups for forms
     cur.execute("SELECT id, name FROM event ORDER BY name")
     events = cur.fetchall()
@@ -88,11 +94,12 @@ def manage_database():
     age_groups = cur.fetchall()
     cur.execute("SELECT id, name FROM person ORDER BY name")
     people = cur.fetchall()
-    
+
     conn.close()
-    
-    return render_template("manage.html", records=records, events=events, 
+
+    return render_template("manage.html", records=records, events=events,
                           age_groups=age_groups, people=people)
+
 
 # Update existing record
 @app.route("/admin/update_record/<int:record_id>", methods=["POST"])
@@ -101,45 +108,46 @@ def update_record(record_id):
     year = request.form.get("year")
     person_name = request.form.get("person_name")
     bhs_record = request.form.get("bhs_record")
-    
+
     # Validate inputs
     if not year or not person_name or not bhs_record:
         flash("All fields are required!", "error")
         return redirect(url_for("manage_database"))
-    
+
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
-    
+
     # Get the current person_id from the record
     cur.execute("SELECT person_id FROM records WHERE id = ?", (record_id,))
     result = cur.fetchone()
-    
+
     if not result:
         flash("Record not found!", "error")
         conn.close()
         return redirect(url_for("manage_database"))
-    
+
     person_id = result[0]
-    
+
     # Update the person's name (keep the same person_id)
     cur.execute("UPDATE person SET name = ? WHERE id = ?", (person_name, person_id))
-    
+
     # Update only year and bhs_record in records (event, age_group, and person_id stay the same)
     cur.execute("""
-        UPDATE records 
+        UPDATE records
         SET year = ?, bhs_record = ?
         WHERE id = ?
     """, (year, bhs_record, record_id))
-    
+
     if cur.rowcount == 0:
         flash("Failed to update record!", "error")
     else:
         flash("Record updated successfully!", "success")
-    
+
     conn.commit()
     conn.close()
-    
+
     return redirect(url_for("manage_database"))
+
 
 def query_db(query, args=(), one=False):
     cur = get_db().execute(query, args)
@@ -383,6 +391,7 @@ def submit():
     record = cur.fetchall()
     conn.close()
     return render_template("records.html", record=record)
+
 
 #If they try to go to a page that does not exist then it will give them this error mesage
 @app.errorhandler(404)
