@@ -1,22 +1,22 @@
 {% extends "layout.html" %}
 {% block content %}
-  <table>
-    <tr>
-      <th>Full name</th>
-      <th>Distance</th>
-      <th>Age group</th>
-      <th>Year</th>
-      <th>Record</th>
-    </tr>
+<table>
+  <tr>
+    <th>Full name</th>
+    <th>Distance</th>
+    <th>Age group</th>
+    <th>Year</th>
+    <th>Record</th>
+  </tr>
   {% for records in record %}
-    <tr>
-      <td>{{records[4]}}</td>
-      <td>{{records[2]}}</td>
-      <td>{{records[3]}}</td>
-      <td>{{records[1]}}</td>
-      <td>{{records[5]}}</td>
-    </tr>
-    {% endfor %}
-  </table>
+  <tr>
+    <td>{{records[4]}}</td>
+    <td>{{records[2]}}</td>
+    <td>{{records[3]}}</td>
+    <td>{{records[1]}}</td>
+    <td>{{records[5]}}</td>
+  </tr>
+  {% endfor %}
+</table>
 
 {% endblock %}
