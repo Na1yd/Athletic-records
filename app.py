@@ -8,7 +8,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "Cabbage tree"
 
 DATABASE = "athletics.db"
-
+# user name for log in is admin and password is Cabbage tree
 
 def login_required(f):
     @wraps(f)
@@ -117,11 +117,32 @@ def update_record(record_id):
 
     # Validate inputs
     if not year or not person_name or not bhs_record:
-        flash("All fields are required!", "error")
+        flash("All fields are required", "error")
         return redirect(url_for("manage_database"))
 
+    try:
+        year = int(year)
+    except ValueError:
+        flash("Year must be a number!", "error")
+        return redirect(url_for("manage_database"))
+
+    if int(year) < 1900 or int(year) > 2026:
+        flash("Must be between 1900 and 2026!", "error")
+        return redirect(url_for("manage_database"))
+
+    try:
+        bhs_record = float(bhs_record)
+    except ValueError:
+        flash("Record must be a number!", "error")
+        return redirect(url_for("manage_database"))
+    
+    if bhs_record < 0:
+        flash("Record must be a positive number!", "error")
+        return redirect(url_for("manage_database"))
+    
     conn = sqlite3.connect("athletics.db")
     cur = conn.cursor()
+
 
     # Get the current person_id from the record
     cur.execute("SELECT person_id FROM records WHERE id = ?", (record_id,))
@@ -134,7 +155,7 @@ def update_record(record_id):
 
     person_id = result[0]
 
-    # Update the person's name (keep the same person_id)
+    # Update the person's name and uses the same persons ID
     cur.execute("UPDATE person SET name = ? WHERE id = ?", (person_name, person_id))
 
     # Update only year and bhs_record in records (event, age_group, and person_id stay the same)
