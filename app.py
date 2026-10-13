@@ -125,6 +125,10 @@ def update_record(record_id):
         flash("All fields are required", "error")
         return redirect(url_for("manage_database"))
 
+    if person_name.isnumeric():
+        flash("Name cannot be a number!", "error")
+        return redirect(url_for("manage_database"))
+    
     try:
         year = int(year)
     except ValueError:
@@ -133,16 +137,6 @@ def update_record(record_id):
 
     if int(year) < 1900 or int(year) > 2026:
         flash("Must be between 1900 and 2026!", "error")
-        return redirect(url_for("manage_database"))
-
-    try:
-        bhs_record = float(bhs_record) and bhs_record < 0
-    except ValueError:
-        flash("Record must be a number!", "error")
-        return redirect(url_for("manage_database"))
-
-    if bhs_record < 0:
-        flash("Record must be a positive number!", "error")
         return redirect(url_for("manage_database"))
 
     conn = get_db()
